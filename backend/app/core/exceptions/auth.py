@@ -33,3 +33,13 @@ class InvalidCredentialsError(AuthenticationError):
 
     def __init__(self) -> None:
         super().__init__("Invalid email or password.")
+
+class InvalidTokenError(AuthenticationError):
+    """
+    Raised when a JWT is invalid or expired.
+    """
+
+    status_code = 401
+
+    def __init__(self) -> None:
+        super().__init__("Invalid or expired authentication token.")

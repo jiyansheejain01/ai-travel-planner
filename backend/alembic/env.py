@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from app.core.config import settings
 from app.data.database.base import Base
-from app.data.database.models import User
+from app.data.database.models import Trip, User
 
 config = context.config
 

@@ -3,6 +3,8 @@ Authentication routes.
 """
 
 from fastapi import APIRouter, Depends, status
+from app.core.dependencies import get_current_user
+from app.data.database.models.user import User
 from sqlalchemy.orm import Session
 
 from app.core.dependencies import get_db
@@ -57,3 +59,16 @@ def login(
     service = AuthService(repository)
 
     return service.login(request)
+
+@router.get(
+    "/me",
+    response_model=UserResponse,
+)
+def me(
+    current_user: User = Depends(get_current_user),
+) -> UserResponse:
+    """
+    Return the currently authenticated user.
+    """
+
+    return UserResponse.model_validate(current_user)
