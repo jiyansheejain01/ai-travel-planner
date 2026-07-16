@@ -3,11 +3,15 @@ Trip service.
 
 Contains trip business logic.
 """
+from uuid import UUID
 
+from app.core.exceptions.trip import TripNotFoundException
+from app.schemas.trip import TripUpdateRequest
 from app.data.database.models.trip import Trip
 from app.data.repositories.trip_repository import TripRepository
 from app.schemas.trip import TripCreateRequest
-
+from uuid import UUID
+from app.core.exceptions.trip import TripNotFoundException
 
 class TripService:
     """
@@ -50,3 +54,66 @@ class TripService:
         """
 
         return self.repository.get_by_user(user_id)
+    
+    def get_trip(
+    self,
+    trip_id: UUID,
+    user_id: UUID,
+) -> Trip:
+        """
+        Retrieve a single trip belonging to a user.
+        """
+
+        trip = self.repository.get_by_id_and_user(
+            trip_id,
+            user_id,
+        )
+
+        if trip is None:
+            raise TripNotFoundException()
+
+        return trip
+    
+    def update_trip(
+    self,
+    trip_id: UUID,
+    user_id: UUID,
+    request: TripUpdateRequest,
+) -> Trip:
+        """
+        Update an existing trip.
+        """
+
+        trip = self.repository.get_by_id_and_user(
+            trip_id,
+            user_id,
+        )
+
+        if trip is None:
+            raise TripNotFoundException()
+
+        update_data = request.model_dump(exclude_unset=True)
+
+        for field, value in update_data.items():
+            setattr(trip, field, value)
+
+        return self.repository.update(trip)
+    
+    def delete_trip(
+    self,
+    trip_id: UUID,
+    user_id: UUID,
+) -> None:
+        """
+        Delete a trip.
+        """
+
+        trip = self.repository.get_by_id_and_user(
+            trip_id,
+            user_id,
+        )
+
+        if trip is None:
+            raise TripNotFoundException()
+
+        self.repository.delete(trip)

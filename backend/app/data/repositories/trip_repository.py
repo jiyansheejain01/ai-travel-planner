@@ -55,3 +55,47 @@ class TripRepository(BaseRepository[Trip]):
         return list(
             self.db.scalars(stmt).all()
         )
+    
+    def get_by_id_and_user(
+    self,
+    trip_id: UUID,
+    user_id: UUID,
+) -> Trip | None:
+        """
+        Retrieve a trip by its ID only if it belongs
+        to the specified user.
+        """
+
+        stmt = (
+            select(Trip)
+            .where(
+                Trip.id == trip_id,
+                Trip.user_id == user_id,
+            )
+        )
+
+        return self.db.scalar(stmt)
+    
+    def update(
+    self,
+    trip: Trip,
+) -> Trip:
+        """
+        Update an existing trip.
+        """
+
+        self.db.commit()
+        self.db.refresh(trip)
+
+        return trip
+    
+    def delete(
+    self,
+    trip: Trip,
+) -> None:
+        """
+        Delete a trip.
+        """
+
+        self.db.delete(trip)
+        self.db.commit()

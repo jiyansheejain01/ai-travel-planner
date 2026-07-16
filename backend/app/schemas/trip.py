@@ -28,6 +28,24 @@ class TripCreateRequest(BaseModel):
 
     currency: str
 
+class TripUpdateRequest(BaseModel):
+    """
+    Request body for updating a trip.
+    """
+
+    title: str | None = None
+
+    primary_destination: str | None = None
+
+    start_date: date | None = None
+
+    end_date: date | None = None
+
+    budget: Decimal | None = None
+
+    currency: str | None = None
+
+    status: TripStatus | None = None
 
 class TripResponse(BaseModel):
     """
