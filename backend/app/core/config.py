@@ -43,10 +43,12 @@ class Settings(BaseSettings):
     # ==========================
     SECRET_KEY: str
     ALGORITHM: str = Field(default="HS256")
+
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30)
+    REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7)
 
 
-@lru_cache
+@lru_cache(maxsize=1)
 def get_settings() -> Settings:
     """
     Returns a cached Settings instance.
