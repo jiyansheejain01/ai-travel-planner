@@ -46,3 +46,10 @@ class Itinerary(BaseModel):
     trip: Mapped["Trip"] = relationship(
         back_populates="itinerary",
     )
+
+    days: Mapped[list["ItineraryDay"]] = relationship(
+        "ItineraryDay",
+        back_populates="itinerary",
+        cascade="all, delete-orphan",
+        order_by="ItineraryDay.day_number",
+    )

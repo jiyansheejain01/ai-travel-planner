@@ -5,31 +5,28 @@ Represents a single day within an itinerary.
 Each itinerary consists of one or more itinerary days.
 """
 
-from __future__ import annotations
-
-import uuid
 from datetime import date
+from uuid import UUID
 
 from sqlalchemy import Date, ForeignKey, Integer, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.data.database.database import Base
+from app.data.database.models.base_model import BaseModel
 
 
-class ItineraryDay(Base):
+class ItineraryDay(BaseModel):
+    """
+    Stores a single day belonging to an itinerary.
+    """
+
     __tablename__ = "itinerary_days"
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-    )
-
-    itinerary_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
+    itinerary_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
         ForeignKey("itineraries.id", ondelete="CASCADE"),
         nullable=False,
+        index=True,
     )
 
     day_number: Mapped[int] = mapped_column(
@@ -47,7 +44,6 @@ class ItineraryDay(Base):
         nullable=True,
     )
 
-    itinerary = relationship(
-        "Itinerary",
+    itinerary: Mapped["Itinerary"] = relationship(
         back_populates="days",
     )
