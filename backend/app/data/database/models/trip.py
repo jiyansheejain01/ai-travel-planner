@@ -8,7 +8,7 @@ from uuid import UUID
 
 from sqlalchemy import Date, Enum, ForeignKey, Numeric, String
 from sqlalchemy import JSON
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.data.database.models.base_model import BaseModel
 from app.data.database.models.enums import TripStatus
@@ -73,4 +73,10 @@ class Trip(BaseModel):
         JSON,
         default=dict,
         nullable=False,
+    )
+
+    itinerary: Mapped["Itinerary"] = relationship(
+        back_populates="trip",
+        cascade="all, delete-orphan",
+        uselist=False,
     )

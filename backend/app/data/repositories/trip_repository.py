@@ -32,8 +32,8 @@ class TripRepository(BaseRepository[Trip]):
         """
 
         stmt = (
-            select(Trip)
-            .where(Trip.id == trip_id)
+            select(self.model)
+            .where(self.model.id == trip_id)
         )
 
         return self.db.scalar(stmt)

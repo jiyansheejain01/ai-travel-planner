@@ -8,10 +8,9 @@ from uuid import UUID
 from app.core.exceptions.trip import TripNotFoundException
 from app.schemas.trip import TripUpdateRequest
 from app.data.database.models.trip import Trip
+from app.data.database.models.itinerary import Itinerary
 from app.data.repositories.trip_repository import TripRepository
 from app.schemas.trip import TripCreateRequest
-from uuid import UUID
-from app.core.exceptions.trip import TripNotFoundException
 
 class TripService:
     """
@@ -26,13 +25,16 @@ class TripService:
 
     def create_trip(
         self,
-        user_id,
+        user_id: UUID,
         request: TripCreateRequest,
     ) -> Trip:
         """
         Create a new trip.
         """
-
+        if request.start_date > request.end_date:
+            raise ValueError("Start date cannot be after end date.")
+        if request.budget <= 0:
+            raise ValueError("Budget must be greater than zero.")
         trip = Trip(
             user_id=user_id,
             title=request.title,
@@ -43,11 +45,21 @@ class TripService:
             currency=request.currency,
         )
 
-        return self.repository.create(trip)
+        trip = self.repository.create(trip)
+
+        trip.itinerary = Itinerary(
+            trip_id=trip.id,
+        )
+
+        self.repository.db.add(trip.itinerary)
+        self.repository.db.commit()
+        self.repository.db.refresh(trip.itinerary)
+
+        return trip
 
     def list_trips(
         self,
-        user_id,
+        user_id: UUID,
     ) -> list[Trip]:
         """
         Retrieve all trips for a user.
@@ -93,7 +105,11 @@ class TripService:
             raise TripNotFoundException()
 
         update_data = request.model_dump(exclude_unset=True)
+        new_start_date = update_data.get("start_date", trip.start_date)
+        new_end_date = update_data.get("end_date", trip.end_date)
 
+        if new_start_date > new_end_date:
+            raise ValueError("Start date cannot be after end date.")
         for field, value in update_data.items():
             setattr(trip, field, value)
 
