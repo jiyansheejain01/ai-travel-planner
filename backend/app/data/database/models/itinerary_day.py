@@ -8,7 +8,7 @@ Each itinerary consists of one or more itinerary days.
 from datetime import date
 from uuid import UUID
 
-from sqlalchemy import Date, ForeignKey, Integer, String
+from sqlalchemy import Date, ForeignKey, Integer, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -22,9 +22,20 @@ class ItineraryDay(BaseModel):
 
     __tablename__ = "itinerary_days"
 
+    __table_args__ = (
+        UniqueConstraint(
+            "itinerary_id",
+            "day_number",
+            name="uq_itinerary_day_number",
+        ),
+    )
+
     itinerary_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
-        ForeignKey("itineraries.id", ondelete="CASCADE"),
+        ForeignKey(
+            "itineraries.id",
+            ondelete="CASCADE",
+        ),
         nullable=False,
         index=True,
     )
@@ -46,4 +57,10 @@ class ItineraryDay(BaseModel):
 
     itinerary: Mapped["Itinerary"] = relationship(
         back_populates="days",
+    )
+
+    activities: Mapped[list["Activity"]] = relationship(
+        "Activity",
+        back_populates="itinerary_day",
+        cascade="all, delete-orphan",
     )

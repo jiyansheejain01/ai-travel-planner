@@ -55,6 +55,12 @@ class Trip(BaseModel):
         nullable=False,
     )
 
+    budget_details: Mapped["Budget"] = relationship(
+        back_populates="trip",
+        cascade="all, delete-orphan",
+        uselist=False,
+    )
+
     currency: Mapped[str] = mapped_column(
         String(3),
         nullable=False,
@@ -80,3 +86,5 @@ class Trip(BaseModel):
         cascade="all, delete-orphan",
         uselist=False,
     )
+
+    

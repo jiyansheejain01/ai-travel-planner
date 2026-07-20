@@ -8,6 +8,8 @@ from app.api.v1.routes.auth import router as auth_router
 from app.api.v1.routes.trip import router as trip_router
 from app.api.v1.routes.itinerary import router as itinerary_router
 from app.api.v1.routes.itinerary_day import router as itinerary_day_router
+from app.api.v1.routes.activity import router as activity_router
+from app.api.v1.routes.budget import router as budget_router
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -22,5 +24,8 @@ app.include_router(auth_router)
 app.include_router(trip_router)
 app.include_router(itinerary_router)
 app.include_router(itinerary_day_router)
+app.include_router(activity_router)
+app.include_router(budget_router)
+
 
 logger.info("AI Travel Planner backend started successfully.")

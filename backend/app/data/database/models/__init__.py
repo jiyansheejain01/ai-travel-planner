@@ -1,3 +1,5 @@
+from .activity import Activity, ActivityCategory
+from .budget import Budget
 from .itinerary import Itinerary
 from .itinerary_day import ItineraryDay
 from .trip import Trip
@@ -8,4 +10,7 @@ __all__ = [
     "Trip",
     "Itinerary",
     "ItineraryDay",
+    "Activity",
+    "ActivityCategory",
+    "Budget",
 ]
