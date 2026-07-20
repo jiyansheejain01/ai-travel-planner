@@ -87,4 +87,7 @@ class Trip(BaseModel):
         uselist=False,
     )
 
-    
+    expenses: Mapped[list["Expense"]] = relationship(
+        back_populates="trip",
+        cascade="all, delete-orphan",
+    )
