@@ -47,6 +47,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(default=30)
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(default=7)
 
+    # ==========================
+    # LLM
+    # ==========================
+    AI_PROVIDER: str = Field(default="groq")
+
+    GROQ_API_KEY: str = Field(default="")
+    GROQ_MODEL: str = Field(default="llama-3.3-70b-versatile")
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
