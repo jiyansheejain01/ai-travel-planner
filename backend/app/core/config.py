@@ -54,6 +54,7 @@ class Settings(BaseSettings):
 
     GROQ_API_KEY: str = Field(default="")
     GROQ_MODEL: str = Field(default="llama-3.3-70b-versatile")
+    ENVIRONMENT: str = "development"
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

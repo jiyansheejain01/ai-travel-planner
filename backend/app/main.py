@@ -12,6 +12,10 @@ from app.api.v1.routes.activity import router as activity_router
 from app.api.v1.routes.budget import router as budget_router
 from app.api.v1.routes.expense import router as expense_router
 from app.api.v1.routes.dashboard import router as dashboard_router
+from app.observability.openlit import initialize_observability
+from app.api.v1.routes.planner import router as planner_router
+
+initialize_observability()
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -30,5 +34,6 @@ app.include_router(activity_router)
 app.include_router(budget_router)
 app.include_router(expense_router)
 app.include_router(dashboard_router)
+app.include_router(planner_router)
 
 logger.info("AI Travel Planner backend started successfully.")
