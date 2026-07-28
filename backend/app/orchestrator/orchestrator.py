@@ -100,6 +100,24 @@ class Orchestrator:
                 priority=1,
             )
 
+        #
+        # Itinerary
+        #
+        if (
+            plan.has_task("weather")
+            and plan.has_task("flight")
+            and plan.has_task("hotel")
+        ):
+            plan.add_task(
+                agent="itinerary",
+                priority=2,
+                depends_on=[
+                    "weather",
+                    "flight",
+                    "hotel",
+                ],
+            )
+
         return plan
     
     def build_task_graph(

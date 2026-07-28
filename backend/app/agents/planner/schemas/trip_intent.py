@@ -33,4 +33,4 @@ class TripIntent(BaseModel):
 
     interests: list[str] | None = None
 
-    follow_up_questions: list[str] = Field(default_factory=list)
+    follow_up_questions: list[str] | None = None

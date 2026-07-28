@@ -4,6 +4,7 @@ from app.agents.planner.planner_agent import PlannerAgent
 from app.agents.weather.weather_agent import WeatherAgent
 from app.agents.flight.flight_agent import FlightAgent
 from app.agents.hotel.hotel_agent import HotelAgent
+from app.agents.itinerary.itinerary_agent import ItineraryAgent
 
 from app.providers.llm.groq_provider import GroqProvider
 
@@ -21,5 +22,6 @@ def create_registry() -> AgentRegistry:
     registry.register(WeatherAgent())
     registry.register(FlightAgent())
     registry.register(HotelAgent())
+    registry.register(ItineraryAgent(llm))
 
     return registry
