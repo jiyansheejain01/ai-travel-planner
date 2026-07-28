@@ -57,6 +57,9 @@ class Orchestrator:
         self,
         state: AgentState,
     ) -> ExecutionPlan:
+        """
+        Build an execution plan based on the parsed trip intent.
+        """
 
         plan = ExecutionPlan()
 
@@ -66,10 +69,36 @@ class Orchestrator:
             return plan
 
         #
-        # Only WeatherAgent exists right now
+        # Weather
         #
         if trip.destination:
-            plan.add_task("weather")
+            plan.add_task(
+                agent="weather",
+                priority=1,
+            )
+
+        #
+        # Flights
+        #
+        if (
+            trip.origin
+            and trip.destination
+            and trip.start_date
+        ):
+            plan.add_task(
+                agent="flight",
+                priority=1,
+            )
+
+        if (
+            trip.destination
+            and trip.start_date
+            and trip.end_date
+        ):
+            plan.add_task(
+                agent="hotel",
+                priority=1,
+            )
 
         return plan
     
@@ -83,33 +112,10 @@ class Orchestrator:
 
         graph = TaskGraph()
 
-        #
-        # Independent tasks
-        #
-        for task in [
-            "weather",
-            "flight",
-            "hotel",
-            "budget",
-            "events",
-        ]:
-            if task in plan.tasks:
-                graph.add_task(task)
-
-        #
-        # Itinerary depends on everything else
-        #
-        if "itinerary" in plan.tasks:
-
-            dependencies = [
-                task
-                for task in plan.tasks
-                if task != "itinerary"
-            ]
-
+        for task in plan.tasks:
             graph.add_task(
-                "itinerary",
-                depends_on=dependencies,
+                task.agent,
+                depends_on=task.depends_on,
             )
 
         return graph

@@ -3,26 +3,52 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 
 
+class ExecutionTask(BaseModel):
+    """
+    Represents one task that the orchestrator should execute.
+    """
+
+    agent: str
+    priority: int = 0
+    depends_on: list[str] = Field(default_factory=list)
+    required: bool = True
+
+
 class ExecutionPlan(BaseModel):
     """
     Defines which agents should execute for the current request.
     """
 
-    tasks: list[str] = Field(default_factory=list)
+    tasks: list[ExecutionTask] = Field(default_factory=list)
 
-    def add_task(self, task: str) -> None:
-        """Add a task if it doesn't already exist."""
+    def add_task(
+        self,
+        agent: str,
+        priority: int = 0,
+        depends_on: list[str] | None = None,
+        required: bool = True,
+    ) -> None:
 
-        if task not in self.tasks:
-            self.tasks.append(task)
+        if any(task.agent == agent for task in self.tasks):
+            return
 
-    def remove_task(self, task: str) -> None:
-        """Remove a task."""
+        self.tasks.append(
+            ExecutionTask(
+                agent=agent,
+                priority=priority,
+                depends_on=depends_on or [],
+                required=required,
+            )
+        )
 
-        if task in self.tasks:
-            self.tasks.remove(task)
+    def remove_task(self, agent: str) -> None:
 
-    def has_task(self, task: str) -> bool:
-        """Check whether a task exists."""
+        self.tasks = [
+            task
+            for task in self.tasks
+            if task.agent != agent
+        ]
 
-        return task in self.tasks
+    def has_task(self, agent: str) -> bool:
+
+        return any(task.agent == agent for task in self.tasks)

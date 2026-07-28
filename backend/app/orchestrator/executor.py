@@ -17,31 +17,37 @@ class Executor:
     ):
         self.dispatcher = dispatcher
 
+    async def execute_task(
+        self,
+        agent_name: str,
+        state: AgentState,
+    ) -> None:
+        """
+        Execute a single agent.
+        """
+
+        result = await self.dispatcher.dispatch(
+            agent_name=agent_name,
+            state=state,
+        )
+
+        state.previous_results[agent_name] = result
+
     async def execute_tasks(
         self,
         tasks: list[str],
         state: AgentState,
     ) -> None:
+        """
+        Execute all ready tasks concurrently.
+        """
 
         coroutines = [
             self.execute_task(
-                task,
-                state,
+                agent_name=task,
+                state=state,
             )
             for task in tasks
         ]
 
         await asyncio.gather(*coroutines)
-
-    async def execute_task(
-        self,
-        task: str,
-        state: AgentState,
-    ) -> None:
-
-        result = await self.dispatcher.dispatch(
-            agent_name=task,
-            state=state,
-        )
-
-        state.previous_results[result.agent] = result

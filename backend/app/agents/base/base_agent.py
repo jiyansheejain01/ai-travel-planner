@@ -22,7 +22,7 @@ class BaseAgent(ABC):
 
     name: str = "base"
 
-    def __init__(self, llm_provider: Any):
+    def __init__(self, llm_provider: Any | None = None):
         self.llm = llm_provider
 
     async def execute(self, state: AgentState) -> AgentResult:
@@ -71,6 +71,11 @@ class BaseAgent(ABC):
         """
         Shared LLM call.
         """
+
+        if self.llm is None:
+            raise RuntimeError(
+                f"{self.__class__.__name__} does not have an LLM provider."
+            )
 
         with tracer.start_as_current_span("llm.call") as span:
 

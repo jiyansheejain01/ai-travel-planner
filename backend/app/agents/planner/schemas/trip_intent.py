@@ -8,13 +8,19 @@ class TripIntent(BaseModel):
 
     destination: str | None = None
 
+    origin: str | None = None
+
+    origin_airport: str | None = None
+
+    destination_airport: str | None = None
+
     start_date: str | None = None
 
     end_date: str | None = None
 
     duration_days: int | None = None
 
-    travelers: int = 1
+    travelers: int | None = None
 
     budget: str | None = None
 
@@ -25,6 +31,6 @@ class TripIntent(BaseModel):
         ),
     )
 
-    interests: list[str] = Field(default_factory=list)
+    interests: list[str] | None = None
 
     follow_up_questions: list[str] = Field(default_factory=list)

@@ -54,7 +54,15 @@ class Settings(BaseSettings):
 
     GROQ_API_KEY: str = Field(default="")
     GROQ_MODEL: str = Field(default="llama-3.3-70b-versatile")
-    ENVIRONMENT: str = "development"
+
+    # ==========================
+    # Flight API (Amadeus)
+    # ==========================
+
+    DUFFEL_API_TOKEN: str
+    DUFFEL_BASE_URL: str = "https://api.duffel.com"
+
+    GEOAPIFY_API_KEY: str
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

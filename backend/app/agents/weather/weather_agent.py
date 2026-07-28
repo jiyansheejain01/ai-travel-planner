@@ -6,7 +6,6 @@ from app.agents.weather.schemas.weather_forecast import WeatherForecast
 from app.agents.weather.tools.weather_tool import WeatherTool
 
 from app.core.prompt_loader import PromptLoader
-
 from app.observability.tracer import tracer
 
 

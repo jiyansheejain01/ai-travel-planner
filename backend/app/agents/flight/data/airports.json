@@ -1,0 +1,23 @@
+{
+  "bangalore": "BLR",
+  "bengaluru": "BLR",
+  "delhi": "DEL",
+  "new delhi": "DEL",
+  "mumbai": "BOM",
+  "chennai": "MAA",
+  "hyderabad": "HYD",
+  "kolkata": "CCU",
+  "goa": "GOI",
+  "kochi": "COK",
+  "paris": "CDG",
+  "london": "LHR",
+  "new york": "JFK",
+  "dubai": "DXB",
+  "singapore": "SIN",
+  "tokyo": "HND",
+  "frankfurt": "FRA",
+  "berlin": "BER",
+  "amsterdam": "AMS",
+  "zurich": "ZRH",
+  "rome": "FCO"
+}
