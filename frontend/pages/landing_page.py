@@ -99,10 +99,10 @@ def build_landing_page(on_submit=None) -> None:
         # --- Trip input row (trailhead marker) ----------------------------
         # NOTE: the input must be constructed *inside* the `with ui.row()` block below —
         # constructing it beforehand places it in the DOM at that point, not inside the row.
-        def _submit():
+        async def _submit():
             text = trip_input.value or ''
             if on_submit:
-                on_submit(text)
+                await on_submit(text)
             else:
                 ui.notify(f'Planning: {text}' if text else 'Describe a trip first')
 
@@ -127,9 +127,9 @@ def build_landing_page(on_submit=None) -> None:
         # --- Example prompt chips ------------------------------------------
         with ui.row().classes('justify-center').style('gap:10px; margin-top:16px; flex-wrap:wrap;'):
             for prompt in EXAMPLE_PROMPTS:
-                def _use_prompt(p=prompt):
+                async def _use_prompt(p=prompt):
                     trip_input.value = p
-                    _submit()
+                    await _submit()
 
                 ui.button(prompt, on_click=_use_prompt).props('flat no-caps unelevated').style(
                     f'border:0.5px solid {LINE}; background:{CARD}; border-radius:20px; '
@@ -152,9 +152,11 @@ def build_landing_page(on_submit=None) -> None:
 # ---------------------------------------------------------------------------
 # Standalone preview: `python landing_page.py`
 # ---------------------------------------------------------------------------
+"""
 if __name__ in {'__main__', '__mp_main__'}:
     @ui.page('/')
     def index():
         build_landing_page(on_submit=lambda text: ui.notify(f'Planning: {text}'))
 
     ui.run(title='AI Travel Planner')
+"""

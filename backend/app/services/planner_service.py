@@ -32,6 +32,10 @@ class PlannerService:
             raise RuntimeError(planner_result.error or "Planner agent failed.")
 
         state.trip = planner_result.result
+        print("\n" + "=" * 80)
+        print("TRIP INTENT")
+        print(state.trip.model_dump())
+        print("=" * 80 + "\n")
 
         state = await self.orchestrator.run(state)
 

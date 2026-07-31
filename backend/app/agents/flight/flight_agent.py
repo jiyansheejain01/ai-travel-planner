@@ -24,7 +24,8 @@ class FlightAgent(BaseAgent):
                 error="Trip intent not found.",
                 confidence=0.0,
             )
-
+        print("Origin:", trip.origin)
+        print("Destination:", trip.destination)
         if not trip.origin or not trip.destination:
             return AgentResult(
                 agent=self.name,
@@ -36,6 +37,8 @@ class FlightAgent(BaseAgent):
 
         resolver = AirportResolver()
 
+       
+
         origin = (
             trip.origin_airport
             or resolver.resolve(trip.origin)
@@ -45,6 +48,9 @@ class FlightAgent(BaseAgent):
             trip.destination_airport
             or resolver.resolve(trip.destination)
         )
+
+        print("Origin Airport:", origin)
+        print("Destination Airport:", destination)
 
         if not origin or not destination:
             return AgentResult(

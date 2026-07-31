@@ -1,17 +1,16 @@
-import requests
+import httpx
 
 BASE_URL = "http://localhost:8000"
 
 
-def plan_trip(prompt: str):
-    response = requests.post(
-        f"{BASE_URL}/planner",
-        json={
-            "prompt": prompt
-        },
-        timeout=120,
-    )
+async def plan_trip(prompt: str):
+    async with httpx.AsyncClient(timeout=120) as client:
+        response = await client.post(
+            f"{BASE_URL}/planner/",
+            json={
+                    "message": prompt
+            }
+        )
 
     response.raise_for_status()
-
     return response.json()
