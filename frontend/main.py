@@ -2,8 +2,8 @@ from nicegui import ui, app
 
 from pages.landing_page import build_landing_page
 from services.planner_service import plan_trip
-import pages.planning
 
+import pages.dashboard
 
 @ui.page("/")
 def home():
@@ -28,8 +28,8 @@ async def start_planner(prompt: str):
         # Save trip for later pages
         app.storage.user["trip"] = result
 
-        # Go to planning page
-        ui.navigate.to("/planning")
+        # Go to dashboard
+        ui.navigate.to("/dashboard")
 
     except Exception as e:
         ui.notify(
