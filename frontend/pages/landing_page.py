@@ -28,10 +28,15 @@ AGENTS = [
     ('ti-wallet', 'budget-agent', MUSTARD),
 ]
 
+# Each prompt intentionally includes an origin city and explicit dates --
+# the Planner Agent is instructed to never invent missing details, and
+# the Flight / Hotel / Itinerary agents only run once origin, destination,
+# and start/end dates are all present. Prompts without these will still
+# plan (weather only) but skip flights, hotels, and the itinerary.
 EXAMPLE_PROMPTS = [
-    '10 days in Kyoto, cherry blossom season',
-    'budget backpacking, Southeast Asia',
-    'romantic weekend, Lisbon',
+    '6 days in Kyoto from Bengaluru, Apr 2 to Apr 8 2027',
+    '10 days in Bali from Mumbai, Dec 5 to Dec 15 2026',
+    'Weekend in Lisbon from London, Sep 12 to Sep 14 2026',
 ]
 
 
@@ -123,6 +128,11 @@ def build_landing_page(on_submit=None) -> None:
                 f'flex-shrink:0; white-space:nowrap;'
             )
 
+        # Flight/hotel/itinerary agents only run once origin, destination, and
+        # start/end dates are all present -- nudge people toward including them.
+        ui.label('Tip: mention where you\'re flying from and your travel dates to unlock flights, hotels, and a full itinerary.').style(
+            f'font-size:11.5px; color:{MUTED}; text-align:center; margin-top:8px; max-width:480px;'
+        )
 
         # --- Example prompt chips ------------------------------------------
         with ui.row().classes('justify-center').style('gap:10px; margin-top:16px; flex-wrap:wrap;'):

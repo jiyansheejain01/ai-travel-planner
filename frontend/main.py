@@ -22,11 +22,18 @@ async def start_planner(prompt: str):
         )
         return
 
+    ui.notify(
+        "Planning your trip — this can take a minute...",
+        type="ongoing",
+    )
+
     try:
         result = await plan_trip(prompt)
 
         # Save trip for later pages
         app.storage.user["trip"] = result
+
+        ui.notify("Trip planned!", type="positive")
 
         # Go to dashboard
         ui.navigate.to("/dashboard")
@@ -34,7 +41,8 @@ async def start_planner(prompt: str):
     except Exception as e:
         ui.notify(
             f"Planning failed:\n{e}",
-            color="negative"
+            color="negative",
+            multi_line=True,
         )
 
 

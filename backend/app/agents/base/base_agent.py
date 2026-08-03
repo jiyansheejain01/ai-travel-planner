@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -35,11 +36,16 @@ class BaseAgent(ABC):
             span.set_attribute("agent.name", self.name)
             span.set_attribute("agent.class", self.__class__.__name__)
 
+            started_at = time.perf_counter()
+
             try:
                 result = await self.run(state)
 
+                result.execution_time = round(time.perf_counter() - started_at, 3)
+
                 span.set_attribute("agent.success", result.success)
                 span.set_attribute("agent.confidence", result.confidence)
+                span.set_attribute("agent.execution_time", result.execution_time)
 
                 return result
 
@@ -54,6 +60,7 @@ class BaseAgent(ABC):
                     result=None,
                     error=str(e),
                     confidence=0.0,
+                    execution_time=round(time.perf_counter() - started_at, 3),
                 )
 
     @abstractmethod
