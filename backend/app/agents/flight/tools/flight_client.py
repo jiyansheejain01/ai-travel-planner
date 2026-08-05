@@ -53,3 +53,25 @@ class FlightClient:
                 raise RuntimeError(response.text)
 
             return response.json()
+
+    async def search_places(
+        self,
+        query: str,
+    ):
+        """
+        Search Duffel places for a city or airport.
+        """
+
+        async with httpx.AsyncClient(timeout=30) as client:
+            response = await client.get(
+                f"{self.base_url}/places/suggestions",
+                headers=self.headers,
+                params={
+                    "query": query,
+                },
+            )
+
+            if response.status_code >= 400:
+                raise RuntimeError(response.text)
+
+            return response.json()

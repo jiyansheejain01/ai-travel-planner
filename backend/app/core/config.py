@@ -62,7 +62,21 @@ class Settings(BaseSettings):
     DUFFEL_API_TOKEN: str
     DUFFEL_BASE_URL: str = "https://api.duffel.com"
 
+    # ==========================
+    # Geoapify
+    # ==========================
+
     GEOAPIFY_API_KEY: str
+
+    # ==========================
+    # Hotel API (HBX / Hotelbeds)
+    # ==========================
+
+    HOTELBEDS_API_KEY: str = Field(default="")
+    HOTELBEDS_API_SECRET: str = Field(default="")
+    HOTELBEDS_BASE_URL: str = Field(
+        default="https://api.test.hotelbeds.com"
+    )
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

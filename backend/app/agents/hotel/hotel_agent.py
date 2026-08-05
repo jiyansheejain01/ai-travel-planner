@@ -14,6 +14,10 @@ class HotelAgent(BaseAgent):
         state: AgentState,
     ) -> AgentResult:
 
+        # --------------------------------------------------------
+        # 1. Get trip intent
+        # --------------------------------------------------------
+
         trip = state.trip
 
         if trip is None:
@@ -25,23 +29,58 @@ class HotelAgent(BaseAgent):
                 confidence=0.0,
             )
 
+        # --------------------------------------------------------
+        # 2. Validate destination
+        # --------------------------------------------------------
+
         if not trip.destination:
             return AgentResult(
                 agent=self.name,
                 success=False,
                 result=None,
-                error="Destination is required.",
+                error="Destination is required for hotel search.",
                 confidence=0.0,
             )
+
+        # --------------------------------------------------------
+        # 3. Validate dates
+        # --------------------------------------------------------
+
+        if not trip.start_date:
+            return AgentResult(
+                agent=self.name,
+                success=False,
+                result=None,
+                error="Check-in date is required for hotel search.",
+                confidence=0.0,
+            )
+
+        if not trip.end_date:
+            return AgentResult(
+                agent=self.name,
+                success=False,
+                result=None,
+                error="Check-out date is required for hotel search.",
+                confidence=0.0,
+            )
+
+        # --------------------------------------------------------
+        # 4. Search hotels
+        # --------------------------------------------------------
 
         tool = HotelTool()
 
         try:
+
             hotels = await tool.search_hotels(
                 city=trip.destination,
-                check_in=trip.start_date or "",
-                check_out=trip.end_date or "",
+                check_in=trip.start_date,
+                check_out=trip.end_date,
             )
+
+            # ----------------------------------------------------
+            # 5. Return result
+            # ----------------------------------------------------
 
             return AgentResult(
                 agent=self.name,
@@ -50,11 +89,12 @@ class HotelAgent(BaseAgent):
                 confidence=0.95,
             )
 
-        except Exception as e:
+        except Exception as exc:
+
             return AgentResult(
                 agent=self.name,
                 success=False,
                 result=None,
-                error=str(e),
+                error=str(exc),
                 confidence=0.0,
             )

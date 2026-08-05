@@ -80,7 +80,7 @@ def build_trip_header(trip: dict, actions: dict | None = None) -> None:
                     f'border:0.5px solid {LINE}; background:{CARD}; color:{INK};'
                 )
                 icon_color = 'white' if primary else BLUE
-                with ui.button(on_click=actions.get(key, lambda: ui.notify(text))).props('flat no-caps').style(
+                with ui.button(on_click=actions.get(key, lambda: ui.notify(text)), color=None).props('flat no-caps').style(
                     f'{style} font-size:12.5px; padding:8px 14px; border-radius:8px;'
                 ):
                     with ui.row().classes('items-center').style('gap:6px;'):

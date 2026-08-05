@@ -11,7 +11,7 @@ class HotelClient:
     GEOCODE_URL = "https://api.geoapify.com/v1/geocode/search"
     PLACES_URL = "https://api.geoapify.com/v2/places"
 
-    async def _get_coordinates(self, city: str):
+    async def get_coordinates(self, city: str):
         """
         Convert a city name into latitude and longitude.
         """
@@ -49,7 +49,7 @@ class HotelClient:
         Search hotels in a city.
         """
 
-        lat, lon = await self._get_coordinates(city)
+        lat, lon = await self.get_coordinates(city)
 
         params = {
             "categories": "accommodation.hotel",

@@ -29,6 +29,21 @@ async def start_planner(prompt: str):
 
     try:
         result = await plan_trip(prompt)
+        print("\n========== FRONTEND BACKEND RESPONSE ==========")
+
+        print("TRIP:")
+        print(result.get("trip"))
+
+        print("\nWEATHER:")
+        print(result.get("results", {}).get("weather"))
+
+        print("\nFLIGHT:")
+        print(result.get("results", {}).get("flight"))
+
+        print("\nHOTEL:")
+        print(result.get("results", {}).get("hotel"))
+
+        print("================================================\n")
 
         # Save trip for later pages
         app.storage.user["trip"] = result

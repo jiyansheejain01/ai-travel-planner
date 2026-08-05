@@ -37,16 +37,14 @@ class FlightAgent(BaseAgent):
 
         resolver = AirportResolver()
 
-       
-
         origin = (
             trip.origin_airport
-            or resolver.resolve(trip.origin)
+            or await resolver.resolve(trip.origin)
         )
 
         destination = (
             trip.destination_airport
-            or resolver.resolve(trip.destination)
+            or await resolver.resolve(trip.destination)
         )
 
         print("Origin Airport:", origin)

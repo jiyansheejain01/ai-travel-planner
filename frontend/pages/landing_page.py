@@ -123,7 +123,7 @@ def build_landing_page(on_submit=None) -> None:
             trip_input = ui.input(placeholder='Describe your dream trip...').props('borderless').style(
                 f'flex:1 1 auto; min-width:0; font-size:15px; color:{INK};'
             )
-            ui.button('Start planning', on_click=_submit).props('unelevated no-caps').style(
+            ui.button('Start planning', on_click=_submit, color=None).props('unelevated no-caps').style(
                 f'background:{BLUE}; color:white; border-radius:8px; font-weight:500; '
                 f'flex-shrink:0; white-space:nowrap;'
             )
@@ -141,7 +141,7 @@ def build_landing_page(on_submit=None) -> None:
                     trip_input.value = p
                     await _submit()
 
-                ui.button(prompt, on_click=_use_prompt).props('flat no-caps unelevated').style(
+                ui.button(prompt, on_click=_use_prompt, color=None).props('flat no-caps unelevated').style(
                     f'border:0.5px solid {LINE}; background:{CARD}; border-radius:20px; '
                     f'padding:6px 14px; font-size:12.5px; color:{MUTED}; font-weight:400;'
                 )

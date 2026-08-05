@@ -78,6 +78,15 @@ class Orchestrator:
             )
 
         #
+        # Attractions
+        #
+        if trip.destination:
+            plan.add_task(
+                agent="attraction",
+                priority=1,
+            )
+
+        #
         # Flights
         #
         if (
@@ -116,6 +125,25 @@ class Orchestrator:
                     "flight",
                     "hotel",
                 ],
+            )
+
+        #
+        # Budget
+        #
+        if (
+            plan.has_task("flight")
+            and plan.has_task("hotel")
+        ):
+
+            depends_on = ["flight", "hotel"]
+
+            if plan.has_task("itinerary"):
+                depends_on.append("itinerary")
+
+            plan.add_task(
+                agent="budget",
+                priority=3,
+                depends_on=depends_on,
             )
 
         return plan

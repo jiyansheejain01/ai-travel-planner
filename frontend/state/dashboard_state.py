@@ -57,10 +57,28 @@ SAMPLE_DAYS = {
     ],
 }
  
-SAMPLE_FLIGHT = {'airline_route': 'ANA · BLR → KIX', 'times': '01:40 → 15:20 · 1 stop · economy',
-                  'price': '¥58,400', 'alt_count': 3}
-SAMPLE_HOTEL = {'name': 'Machiya Higashiyama Inn', 'rating_distance': '4.6 rating · 0.6km from Gion',
-                 'price': '¥9,800 / night', 'alt_count': 5}
+SAMPLE_FLIGHT = {
+    'airline_route': 'ANA · BLR → KIX', 'times': '01:40 → 15:20 · 1 stop · economy',
+    'price': '¥58,400', 'alt_count': 3,
+    'options': [
+        {'airline_route': 'ANA · BLR → KIX', 'times': '01:40 → 15:20 · 1 stop · economy', 'price': '¥58,400'},
+        {'airline_route': 'JAL · BLR → KIX', 'times': '03:10 → 18:05 · 1 stop · economy', 'price': '¥61,200'},
+        {'airline_route': 'Emirates · BLR → KIX', 'times': '23:55 → 19:40 · 2 stops · economy', 'price': '¥52,900'},
+        {'airline_route': 'Singapore Airlines · BLR → KIX', 'times': '05:20 → 21:15 · 1 stop · economy', 'price': '¥64,800'},
+    ],
+}
+SAMPLE_HOTEL = {
+    'name': 'Machiya Higashiyama Inn', 'rating_distance': '4.6 rating · 0.6km from Gion',
+    'price': '¥9,800 / night', 'alt_count': 5,
+    'options': [
+        {'name': 'Machiya Higashiyama Inn', 'rating_distance': '4.6 rating · 0.6km from Gion', 'price': '¥9,800 / night'},
+        {'name': 'Kyoto Century Hotel', 'rating_distance': '4.2 rating · 0.3km from Kyoto Station', 'price': '¥7,400 / night'},
+        {'name': 'Gion Ryokan Yuzuki', 'rating_distance': '4.8 rating · 0.9km from Gion', 'price': '¥13,200 / night'},
+        {'name': 'Hotel Granvia Kyoto', 'rating_distance': '4.5 rating · adjoining Kyoto Station', 'price': '¥11,600 / night'},
+        {'name': 'Piece Hostel Kyoto', 'rating_distance': '4.0 rating · 1.1km from Gion', 'price': '¥3,900 / night'},
+        {'name': 'The Ritz-Carlton Kyoto', 'rating_distance': '4.9 rating · 0.5km from Nijo Castle', 'price': '¥42,000 / night'},
+    ],
+}
 SAMPLE_WEATHER = [
     {'day': 'Day 1', 'condition': 'sun', 'temp': '19°C'},
     {'day': 'Day 2', 'condition': 'sun', 'temp': '18°C'},
