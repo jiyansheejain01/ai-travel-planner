@@ -8,3 +8,7 @@ htmlcov/
 .vscode/
 .idea/
 *.db
+
+
+
+backend/app/data/hotelbeds/

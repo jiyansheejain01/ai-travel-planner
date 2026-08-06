@@ -7,6 +7,7 @@ from app.agents.hotel.hotel_agent import HotelAgent
 from app.agents.itinerary.itinerary_agent import ItineraryAgent
 from app.agents.budget.budget_agent import BudgetAgent
 from app.agents.attraction.attraction_agent import AttractionAgent
+from app.agents.recommendation.recommendation_agent import RecommendationAgent
 
 from app.providers.llm.groq_provider import GroqProvider
 
@@ -27,5 +28,6 @@ def create_registry() -> AgentRegistry:
     registry.register(ItineraryAgent(llm))
     registry.register(BudgetAgent())
     registry.register(AttractionAgent())
+    registry.register(RecommendationAgent(llm))
 
     return registry

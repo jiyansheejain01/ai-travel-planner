@@ -87,6 +87,23 @@ class Orchestrator:
             )
 
         #
+        # Recommendations (personalized picks built on top of the
+        # attraction candidates + weather, matched to traveler interests)
+        #
+        if plan.has_task("attraction"):
+
+            depends_on = ["attraction"]
+
+            if plan.has_task("weather"):
+                depends_on.append("weather")
+
+            plan.add_task(
+                agent="recommendation",
+                priority=2,
+                depends_on=depends_on,
+            )
+
+        #
         # Flights
         #
         if (

@@ -11,11 +11,12 @@ Backend response shape (see app/api/v1/routes/planner.py):
         "agents_registered": int,
     }
 
-Planner, weather, attraction, flight, hotel, itinerary, and budget are
-registered on the backend (see app/orchestrator/bootstrap.py). Restaurant,
-transport, events and memory agents have code under app/agents/ but
-aren't registered yet, so those sections show an honest "not connected
-yet" placeholder instead of fabricated numbers.
+Planner, weather, attraction, flight, hotel, itinerary, budget, and
+recommendation are registered on the backend (see
+app/orchestrator/bootstrap.py). Restaurant, transport, events and memory
+agents have code under app/agents/ but aren't registered yet, so those
+sections show an honest "not connected yet" placeholder instead of
+fabricated numbers.
 """
 
 from __future__ import annotations
@@ -24,7 +25,7 @@ from datetime import date
 from typing import Any
 
 # Order matters: this is the order agent cards render in.
-KNOWN_AGENTS = ["planner", "weather", "attraction", "flight", "hotel", "itinerary", "budget"]
+KNOWN_AGENTS = ["planner", "weather", "attraction", "flight", "hotel", "itinerary", "budget", "recommendation"]
 
 FUTURE_AGENTS = [
     "restaurant agent",
@@ -183,6 +184,8 @@ def _agent_summary(name: str, result: dict | None, trip_intent: dict) -> tuple[s
             return "queued", "Skipped — needs flight and hotel results before it can run."
         if name == "attraction":
             return "queued", "Skipped — needs a destination before it can run."
+        if name == "recommendation":
+            return "queued", "Skipped — needs the attraction agent's results first."
         return "queued", "Skipped — required trip details weren't available."
 
     if not result.get("success"):
@@ -230,6 +233,12 @@ def _agent_summary(name: str, result: dict | None, trip_intent: dict) -> tuple[s
         if data.get("within_budget") is True:
             return "done", f"Estimated total {total}, within budget."
         return "done", f"Estimated total {total}. No numeric budget was given to compare against."
+
+    if name == "recommendation":
+        count = len(data.get("recommendations") or [])
+        if count == 0:
+            return "error", "No personalized recommendations could be generated."
+        return "done", f"Generated {count} personalized pick{'s' if count != 1 else ''}."
 
     return "done", "Completed."
 
@@ -543,9 +552,8 @@ def _build_weather(weather_result: dict | None) -> list[dict]:
 
 # ---------------------------------------------------------------------------
 # 4. Budget + places + recommendations + alerts + timeline
-#    (budget and places now read real agent results; recommendations
-#     still shows an honest note since no dedicated tips/recommendation
-#     agent has been wired in yet)
+#    (budget, places, and recommendations all read real agent results now
+#     that the recommendation agent is registered)
 # ---------------------------------------------------------------------------
 def _build_places(attraction_result: dict | None) -> list[dict]:
     if not attraction_result or not attraction_result.get("success"):
@@ -572,32 +580,58 @@ def _build_places(attraction_result: dict | None) -> list[dict]:
     return [
         {
             "name": a.get("name", "Unknown place"),
-            "hidden_gem": not a.get("wikidata_id"),
+            "hidden_gem": False,
         }
         for a in ranked[:8]
     ]
 
 
 def _build_recommendations(results: dict) -> list[str]:
+    recommendation_result = _result(results, "recommendation")
     attraction_result = _result(results, "attraction")
 
-    if not attraction_result:
+    if recommendation_result is None:
+        if not attraction_result:
+            return [
+                "Recommendations need a destination before they can run."
+            ]
         return [
-            "Attraction and recommendation agents aren't connected yet — "
-            "this section will populate once they're added."
+            "Recommendation agent hasn't run yet — it needs the attraction "
+            "agent's results first."
         ]
 
-    if not attraction_result.get("success"):
+    if not recommendation_result.get("success"):
         return [
-            "The attraction agent couldn't find places for this destination "
-            f"({attraction_result.get('error') or 'unknown error'})."
+            "The recommendation agent couldn't generate personalized picks "
+            f"({recommendation_result.get('error') or 'unknown error'})."
         ]
 
-    return [
-        "Places to visit (left) are pulled from the Attraction agent. A "
-        "dedicated recommendations agent for personalized tips hasn't "
-        "been added yet."
-    ]
+    data = recommendation_result.get("result") or {}
+    items = data.get("recommendations") or []
+
+    if not items:
+        return [data.get("summary") or "No personalized recommendations were generated for this trip."]
+
+    tips = []
+
+    summary = data.get("summary")
+    if summary:
+        tips.append(summary)
+
+    for item in items:
+        name = item.get("name", "Unnamed pick")
+        category = item.get("category")
+        reason = item.get("reason")
+
+        label = f"{name} ({category})" if category else name
+        tip = f"{label} — {reason}" if reason else label
+
+        if item.get("is_hidden_gem"):
+            tip = f"Hidden gem: {tip}"
+
+        tips.append(tip)
+
+    return tips
 
 
 def _build_budget(results: dict) -> dict:
@@ -662,7 +696,7 @@ def _build_budget(results: dict) -> dict:
 
 def _build_alerts(results: dict) -> list[dict]:
     alerts = []
-    for name in ("weather", "attraction", "flight", "hotel", "itinerary", "budget"):
+    for name in ("weather", "attraction", "flight", "hotel", "itinerary", "budget", "recommendation"):
         result = _result(results, name)
         if result and not result.get("success"):
             alerts.append({"type": "warning", "text": f"{name.capitalize()} agent: {result.get('error') or 'failed.'}"})
