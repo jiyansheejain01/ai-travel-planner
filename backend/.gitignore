@@ -11,4 +11,4 @@ htmlcov/
 
 
 
-backend/app/data/hotelbeds/
+app/data/hotelbeds/*
