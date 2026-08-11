@@ -45,6 +45,9 @@ class MemoryAgent:
         for m in memories:
             print(m.score, m.text)
 
-        lines = [f"- {m.text}" for m in memories]
+        # Remove duplicates while preserving order
+        unique_texts = list(dict.fromkeys(m.text for m in memories))
+
+        lines = [f"- {text}" for text in unique_texts]
 
         return "\n".join(lines)
