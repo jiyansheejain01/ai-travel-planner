@@ -8,8 +8,11 @@ import pages.dashboard
 @ui.page("/")
 def home():
 
+    prefill = app.storage.user.pop("edit_prefill", None)
+
     build_landing_page(
-        on_submit=start_planner
+        on_submit=start_planner,
+        prefill=prefill,
     )
 
 

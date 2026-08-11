@@ -23,7 +23,7 @@ def build_trip_header(trip: dict, actions: dict | None = None) -> None:
         planner_status, confidence, planning_time, agents_used
     }
     actions: optional dict of callables keyed by
-        'edit', 'regenerate', 'add_activity', 'export', 'save'
+        'edit', 'regenerate', 'add_activity', 'export'
     """
     actions = actions or {}
  
@@ -90,6 +90,5 @@ def build_trip_header(trip: dict, actions: dict | None = None) -> None:
             action_button('ti-edit', 'Edit trip', 'edit')
             action_button('ti-refresh', 'Regenerate plan', 'regenerate')
             action_button('ti-plus', 'Add activity', 'add_activity')
-            action_button('ti-download', 'Export', 'export')
-            action_button('ti-device-floppy', 'Save trip', 'save', primary=True)
+            action_button('ti-download', 'Export', 'export', primary=True)
  

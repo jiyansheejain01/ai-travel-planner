@@ -66,7 +66,7 @@ def _option_row(
             )
 
 def build_itinerary_and_travel(days: dict, flight: dict, hotel: dict, weather: list[dict],
-                                selected_day: str | None = None, on_day_select=None, on_regenerate_day=None) -> None:
+                                selected_day: str | None = None, on_day_select=None) -> None:
     """
     days: { 'Day 1': [item, ...], 'Day 2': [...], ... }  (see _itinerary_row for item shape)
     flight: {airline_route, times, price, converted_note, alt_count, options: [{airline_route, times, price}, ...]}
@@ -107,17 +107,6 @@ def build_itinerary_and_travel(days: dict, flight: dict, hotel: dict, weather: l
                 ui.button(day_name, on_click=lambda d=day_name: _select_day(d), color=None).props(
                     'flat no-caps'
                 ).style(f'{style} font-size:12px; padding:5px 12px; border-radius:20px;')
-
-            ui.space()
-            with ui.button(on_click=lambda: (on_regenerate_day or (lambda: None))(), color=None).props(
-                'flat no-caps'
-            ).style(
-                f'border:0.5px solid {LINE}; background:{CARD}; color:{BLUE}; font-size:12px; '
-                f'padding:5px 12px; border-radius:8px;'
-            ):
-                with ui.row().classes('items-center').style('gap:5px;'):
-                    ui.html('<i class="ti ti-refresh" style="font-size:14px;" aria-hidden="true"></i>')
-                    ui.label('Regenerate day')
 
     @ui.refreshable
     def day_body() -> None:

@@ -150,16 +150,21 @@ def _page_style() -> None:
     ui.query('.nicegui-content').classes('items-center')
 
 
-def build_landing_page(on_submit=None) -> None:
+def build_landing_page(on_submit=None, prefill: dict | None = None) -> None:
     """
     Renders the trail-map hero section.
 
     on_submit: optional callable(str) invoked with the trip description
                when "Start planning" is clicked or an example chip is used.
+    prefill: optional dict of field values (same shape as compose_trip_message
+             expects) to pre-populate the form with, e.g. when arriving here
+             via the dashboard's "Edit trip" action.
     """
     _load_fonts_and_icons()
     _page_style()
     ui.colors(primary=BLUE, secondary=MUSTARD)
+
+    prefill = prefill or {}
 
     with ui.column().classes('items-center w-full').style('max-width:720px; margin:0 auto; padding:48px 24px;'):
 
@@ -203,7 +208,7 @@ def build_landing_page(on_submit=None) -> None:
         # natural-language message the Planner Agent's LLM already expects --
         # the backend contract (`{"message": str}`) is unchanged.
 
-        selected_interests: set[str] = set()
+        selected_interests: set[str] = set(prefill.get('interests') or [])
         interest_buttons: dict[str, ui.button] = {}
 
         def _field_label(text: str) -> None:
@@ -240,12 +245,16 @@ def build_landing_page(on_submit=None) -> None:
             with ui.row().style('width:100%; gap:14px; flex-wrap:wrap;'):
                 with ui.column().style('flex:1 1 220px; min-width:180px; gap:0;'):
                     _field_label('DESTINATION *')
-                    destination_input = ui.input(placeholder='e.g. Kyoto').props('borderless dense').style(
+                    destination_input = ui.input(
+                        placeholder='e.g. Kyoto', value=prefill.get('destination') or '',
+                    ).props('borderless dense').style(
                         f'font-size:15px; color:{INK}; border-bottom:1px solid {LINE};'
                     )
                 with ui.column().style('flex:1 1 220px; min-width:180px; gap:0;'):
                     _field_label('FLYING FROM')
-                    origin_input = ui.input(placeholder='e.g. Bengaluru').props('borderless dense').style(
+                    origin_input = ui.input(
+                        placeholder='e.g. Bengaluru', value=prefill.get('origin') or '',
+                    ).props('borderless dense').style(
                         f'font-size:15px; color:{INK}; border-bottom:1px solid {LINE};'
                     )
 
@@ -253,12 +262,16 @@ def build_landing_page(on_submit=None) -> None:
             with ui.row().style('width:100%; gap:14px; flex-wrap:wrap;'):
                 with ui.column().style('flex:1 1 220px; min-width:180px; gap:0;'):
                     _field_label('START DATE')
-                    start_date_input = ui.input().props('borderless dense type=date').style(
+                    start_date_input = ui.input(value=prefill.get('start_date') or '').props(
+                        'borderless dense type=date'
+                    ).style(
                         f'font-size:15px; color:{INK}; border-bottom:1px solid {LINE};'
                     )
                 with ui.column().style('flex:1 1 220px; min-width:180px; gap:0;'):
                     _field_label('END DATE')
-                    end_date_input = ui.input().props('borderless dense type=date').style(
+                    end_date_input = ui.input(value=prefill.get('end_date') or '').props(
+                        'borderless dense type=date'
+                    ).style(
                         f'font-size:15px; color:{INK}; border-bottom:1px solid {LINE};'
                     )
 
@@ -266,17 +279,23 @@ def build_landing_page(on_submit=None) -> None:
             with ui.row().style('width:100%; gap:14px; flex-wrap:wrap;'):
                 with ui.column().style('flex:1 1 140px; min-width:120px; gap:0;'):
                     _field_label('TRAVELERS')
-                    travelers_input = ui.number(value=2, min=1, max=20, format='%.0f').props('borderless dense').style(
+                    travelers_input = ui.number(
+                        value=prefill.get('travelers') or 2, min=1, max=20, format='%.0f',
+                    ).props('borderless dense').style(
                         f'font-size:15px; color:{INK}; border-bottom:1px solid {LINE};'
                     )
                 with ui.column().style('flex:1 1 160px; min-width:140px; gap:0;'):
                     _field_label('BUDGET (OPTIONAL)')
-                    budget_input = ui.number(min=0, format='%.0f').props('borderless dense').style(
+                    budget_input = ui.number(
+                        value=prefill.get('budget_amount'), min=0, format='%.0f',
+                    ).props('borderless dense').style(
                         f'font-size:15px; color:{INK}; border-bottom:1px solid {LINE};'
                     )
                 with ui.column().style('flex:1 1 110px; min-width:100px; gap:0;'):
                     _field_label('CURRENCY')
-                    currency_select = ui.select(CURRENCIES, value='INR').props('borderless dense').style(
+                    currency_select = ui.select(
+                        CURRENCIES, value=prefill.get('budget_currency') or 'INR',
+                    ).props('borderless dense').style(
                         f'font-size:15px; color:{INK}; border-bottom:1px solid {LINE};'
                     )
 
