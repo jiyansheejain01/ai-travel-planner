@@ -21,6 +21,11 @@ class PlannerAgent(BaseAgent):
         state: AgentState,
     ) -> AgentResult:
 
+        with open("planner_test.txt", "w", encoding="utf-8") as f:
+            f.write("PlannerAgent.run() was executed\n")
+            f.write(f"INPUT: {state.user_input}\n")
+            f.write(f"METADATA: {state.metadata}\n")
+
         with tracer.start_as_current_span("planner.reasoning") as span:
 
             # -------------------------------------------------
@@ -53,6 +58,13 @@ class PlannerAgent(BaseAgent):
                             current_request=state.user_input,
                         )
                     )
+
+                    with open("memory_debug.log", "a", encoding="utf-8") as f:
+                        f.write("\n" + "=" * 60 + "\n")
+                        f.write(f"USER ID: {user_id}\n")
+                        f.write(f"INPUT: {state.user_input}\n")
+                        f.write(f"MEMORY: {memory_context}\n")
+                        f.write("=" * 60 + "\n")
 
                     # Save retrieved memory into shared workflow state
                     state.memory["retrieved_context"] = memory_context
@@ -119,6 +131,44 @@ Instructions:
             # STORE PLANNER OUTPUT IN SHARED STATE
             # -------------------------------------------------
             state.trip = response
+
+            # -------------------------------------------------
+            # SAVE SIMPLE LONG-TERM PREFERENCES
+            # -------------------------------------------------
+            if user_id:
+                try:
+                    trip = state.trip
+
+                    memories_to_store = []
+
+                    if getattr(trip, "interests", None):
+                        for interest in trip.interests:
+                            memories_to_store.append(
+                                f"User is interested in {interest.lower()} travel experiences"
+                            )
+
+                    if getattr(trip, "destination", None):
+                        memories_to_store.append(
+                            f"User has planned a trip to {trip.destination}"
+                        )
+
+                    # Remove duplicates
+                    memories_to_store = list(dict.fromkeys(memories_to_store))
+
+                    for memory in memories_to_store:
+                        await self.memory_agent.remember_preference(
+                            user_id=user_id,
+                            text=memory,
+                        )
+
+                    with open("memory_debug.log", "a", encoding="utf-8") as f:
+                        f.write("SAVED MEMORIES:\n")
+                        for memory in memories_to_store:
+                            f.write(f"- {memory}\n")
+
+                except Exception as exc:
+                    with open("memory_debug.log", "a", encoding="utf-8") as f:
+                        f.write(f"SAVE ERROR: {exc}\n")
 
             # -------------------------------------------------
             # RETURN RESULT

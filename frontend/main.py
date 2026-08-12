@@ -1,12 +1,25 @@
 from nicegui import ui, app
 
 from pages.landing_page import build_landing_page
-from services.planner_service import plan_trip
+from pages.login_page import build_login_page
+from services.planner_service import AuthError, plan_trip
 
 import pages.dashboard
 
+
+def _current_session() -> dict | None:
+    return app.storage.user.get("auth")
+
+
 @ui.page("/")
 def home():
+
+    if not _current_session():
+        # Planning requires an account (the Planner agent's results are
+        # tied to the signed-in user for the RAG/memory pipeline), so
+        # send anonymous visitors to sign in or register first.
+        ui.navigate.to("/login")
+        return
 
     prefill = app.storage.user.pop("edit_prefill", None)
 
@@ -16,7 +29,25 @@ def home():
     )
 
 
+@ui.page("/login")
+def login_page():
+
+    if _current_session():
+        # Already signed in -- nothing to do here.
+        ui.navigate.to("/")
+        return
+
+    build_login_page(on_success=lambda session: ui.navigate.to("/"))
+
+
 async def start_planner(prompt: str):
+
+    session = _current_session()
+
+    if not session:
+        ui.notify("Please sign in to plan a trip.", color="negative")
+        ui.navigate.to("/login")
+        return
 
     if not prompt.strip():
         ui.notify(
@@ -31,7 +62,7 @@ async def start_planner(prompt: str):
     )
 
     try:
-        result = await plan_trip(prompt)
+        result = await plan_trip(prompt, session.get("access_token"))
         print("\n========== FRONTEND BACKEND RESPONSE ==========")
 
         print("TRIP:")
@@ -55,6 +86,13 @@ async def start_planner(prompt: str):
 
         # Go to dashboard
         ui.navigate.to("/dashboard")
+
+    except AuthError:
+        # Token missing/expired/invalid -- the backend rejected the
+        # request outright, so the session is no longer good for anything.
+        app.storage.user.pop("auth", None)
+        ui.notify("Your session expired — please sign in again.", color="negative")
+        ui.navigate.to("/login")
 
     except Exception as e:
         ui.notify(

@@ -22,6 +22,7 @@ class PlannerService:
     async def plan_trip(
         self,
         message: str,
+        user_id: str,
     ) -> tuple[AgentState, float]:
         """
         Runs the full planning workflow.
@@ -33,28 +34,52 @@ class PlannerService:
 
         started_at = time.perf_counter()
 
-        state = AgentState(user_input=message)
+        # -------------------------------------------------
+        # CREATE AGENT STATE WITH USER METADATA
+        # -------------------------------------------------
+        state = AgentState(
+            user_input=message,
+            metadata={
+                "user_id": user_id,
+            },
+        )
 
+        # -------------------------------------------------
+        # RUN PLANNER AGENT
+        # -------------------------------------------------
         planner = self.dispatcher.registry.get("planner")
 
         planner_result = await planner.execute(state)
 
-        # Keep the planner's own result alongside the other agents' so the
-        # frontend's agent-execution grid can show it too (previously it
-        # was only used to populate state.trip and then discarded).
+        # Keep planner result for frontend visualization
         state.previous_results["planner"] = planner_result
 
         if not planner_result.success:
             raise RuntimeError(planner_result.error or "Planner agent failed.")
 
         state.trip = planner_result.result
+
+        # -------------------------------------------------
+        # DEBUG: VERIFY USER ID REACHES THE PLANNER
+        # -------------------------------------------------
+        with open("planner_test.txt", "a", encoding="utf-8") as f:
+            f.write("\n" + "=" * 60 + "\n")
+            f.write(f"INPUT: {state.user_input}\n")
+            f.write(f"METADATA: {state.metadata}\n")
+            f.write("=" * 60 + "\n")
+
         print("\n" + "=" * 80)
         print("TRIP INTENT")
         print(state.trip.model_dump())
+        print("METADATA:", state.metadata)
         print("=" * 80 + "\n")
 
+        # -------------------------------------------------
+        # RUN SPECIALIST AGENTS
+        # -------------------------------------------------
         state = await self.orchestrator.run(state)
 
         total_time = round(time.perf_counter() - started_at, 3)
 
         return state, total_time
+

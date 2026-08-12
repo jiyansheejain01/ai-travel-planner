@@ -1,0 +1,8 @@
+PlannerAgent.run() was executed
+INPUT: A trip to Bali from Bengaluru. Travelers: 2. Budget: 100000.0 INR. Interested in: Food.
+METADATA: {'user_id': '26b55bbb-0976-49af-a7ae-abfdcb2a1244'}
+
+============================================================
+INPUT: A trip to Bali from Bengaluru. Travelers: 2. Budget: 100000.0 INR. Interested in: Food.
+METADATA: {'user_id': '26b55bbb-0976-49af-a7ae-abfdcb2a1244'}
+============================================================

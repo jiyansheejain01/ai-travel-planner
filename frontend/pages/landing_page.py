@@ -9,7 +9,7 @@ and either:
 
 from datetime import date, datetime
 
-from nicegui import ui
+from nicegui import ui, app
 
 # ---------------------------------------------------------------------------
 # Palette / tokens for the trail-map identity
@@ -167,6 +167,27 @@ def build_landing_page(on_submit=None, prefill: dict | None = None) -> None:
     prefill = prefill or {}
 
     with ui.column().classes('items-center w-full').style('max-width:720px; margin:0 auto; padding:48px 24px;'):
+
+        # --- Auth corner: sign in, or greet the signed-in user --------------
+        with ui.row().classes('w-full items-center justify-end').style('margin-bottom:8px;'):
+            auth = app.storage.user.get('auth')
+
+            if auth:
+                def _logout() -> None:
+                    app.storage.user.pop('auth', None)
+                    ui.navigate.reload()
+
+                with ui.row().classes('items-center').style('gap:10px;'):
+                    ui.label(f"Hi, {auth.get('email', 'traveler')}").style(
+                        f'font-size:13px; color:{MUTED};'
+                    )
+                    ui.link('Log out', '#').style(
+                        f'font-size:13px; color:{BLUE}; font-weight:600; text-decoration:none;'
+                    ).on('click', _logout)
+            else:
+                ui.link('Sign in', '/login').style(
+                    f'font-size:13px; color:{BLUE}; font-weight:600; text-decoration:none;'
+                )
 
         # --- Hero: trail line + headline ---------------------------------
         with ui.column().classes('items-center w-full').style('position:relative;'):

@@ -7,7 +7,7 @@ from components.dashboard.trip_content import build_itinerary_and_travel
 from components.dashboard.trip_insights import build_budget_and_insights
 
 from services.dashboard_adapter import adapt_backend_response
-from services.planner_service import plan_trip
+from services.planner_service import AuthError, plan_trip
 
 from pages.landing_page import compose_trip_message
 
@@ -100,13 +100,23 @@ def _build_actions(raw: dict, data: dict) -> dict:
         trip_intent = raw.get("trip") or {}
         message = compose_trip_message(_trip_intent_to_fields(trip_intent))
 
+        session = app.storage.user.get("auth")
+        if not session:
+            ui.notify("Your session expired — please sign in again.", color="negative")
+            ui.navigate.to("/login")
+            return
+
         ui.notify("Regenerating your plan — this can take a minute...", type="ongoing")
 
         try:
-            new_result = await plan_trip(message)
+            new_result = await plan_trip(message, session.get("access_token"))
             app.storage.user["trip"] = new_result
             ui.notify("Plan regenerated!", type="positive")
             ui.navigate.reload()
+        except AuthError:
+            app.storage.user.pop("auth", None)
+            ui.notify("Your session expired — please sign in again.", color="negative")
+            ui.navigate.to("/login")
         except Exception as exc:
             ui.notify(f"Regenerate failed:\n{exc}", color="negative", multi_line=True)
 
@@ -205,6 +215,11 @@ def dashboard():
     without having planned a trip yet, send them back to plan one instead
     of showing fabricated sample data.
     """
+
+    if not app.storage.user.get("auth"):
+        ui.notify("Please sign in to view your trip.", color="warning")
+        ui.navigate.to("/login")
+        return
 
     raw = app.storage.user.get("trip")
 
