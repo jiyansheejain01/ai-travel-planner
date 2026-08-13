@@ -161,7 +161,6 @@ python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
-pip install cohere qdrant-client  # see "Known Gaps" below
 
 cp .env.example .env
 # fill in .env with your real keys — see Environment Variables
@@ -284,7 +283,6 @@ The Planner Agent remembers each user across sessions:
 
 ## Known Gaps
 
-- `cohere` and `qdrant-client` are used by the memory subsystem but are **not yet listed in `backend/requirements.txt`** — install them manually (`pip install cohere qdrant-client`) until this is fixed upstream.
 - `app/rag/` (a separate, broader retrieval module) and `app/evaluation/` (confidence/hallucination scoring harness) exist as empty scaffolding, not yet implemented.
 - The `restaurant`, `events`, `transportation`, and `report` agents are scaffolded but not implemented or registered.
 - `app/gateway/` (a dedicated API gateway with centralized auth middleware & rate limiting) is scaffolded but not wired in — auth is currently enforced per-route via a shared FastAPI dependency instead.
