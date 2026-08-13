@@ -1,8 +1,8 @@
 PlannerAgent.run() was executed
-INPUT: A trip to Bali from Bengaluru. Travelers: 2. Budget: 100000.0 INR. Interested in: Food.
-METADATA: {'user_id': '26b55bbb-0976-49af-a7ae-abfdcb2a1244'}
+INPUT: 4 days in Bali from Bengaluru, Aug 13 2026 to Aug 17 2026. Travelers: 2. Budget: 100000.0 INR.
+METADATA: {'user_id': 'a68a19b2-d6c3-498b-af96-3f1468123367'}
 
 ============================================================
-INPUT: A trip to Bali from Bengaluru. Travelers: 2. Budget: 100000.0 INR. Interested in: Food.
-METADATA: {'user_id': '26b55bbb-0976-49af-a7ae-abfdcb2a1244'}
+INPUT: 4 days in Bali from Bengaluru, Aug 13 2026 to Aug 17 2026. Travelers: 2. Budget: 100000.0 INR.
+METADATA: {'user_id': 'a68a19b2-d6c3-498b-af96-3f1468123367'}
 ============================================================

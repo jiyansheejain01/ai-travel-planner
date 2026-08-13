@@ -63,7 +63,7 @@ class PlannerAgent(BaseAgent):
                         f.write("\n" + "=" * 60 + "\n")
                         f.write(f"USER ID: {user_id}\n")
                         f.write(f"INPUT: {state.user_input}\n")
-                        f.write(f"MEMORY: {memory_context}\n")
+                        f.write(f"MEMORY: \n{memory_context}\n")
                         f.write("=" * 60 + "\n")
 
                     # Save retrieved memory into shared workflow state
